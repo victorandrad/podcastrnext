@@ -1,5 +1,10 @@
+const debug = process.env.NODE_ENV !== "production";
 module.exports = {
-    images: {
-        domains: ['storage.googleapis.com']
+  exportPathMap: function () {
+    return {
+      "/": { page: "/" },
+      "/ap-grid-layout": { page: "/ap-grid-layout" },
     }
+  },
+  assetPrefix: !debug ? 'https://victorandra.de/poscastrnext/' : '',
 }
