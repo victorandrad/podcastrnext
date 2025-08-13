@@ -3,8 +3,9 @@ const nextConfig = {
   // Configuração para build estático
   output: 'export',
   trailingSlash: true,
-  // Remover basePath para arquivos estáticos
+  // Configurar para domínio personalizado
   basePath: '',
+  assetPrefix: '',
   images: {
     unoptimized: true,
     remotePatterns: [
