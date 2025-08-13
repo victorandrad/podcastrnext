@@ -1,12 +1,5 @@
 import { createContext, ReactNode, useContext, useState } from 'react';
-
-type Episode = {
-  title: string;
-  thumbnail: string;
-  members: string;
-  duration: number;
-  url: string;
-}
+import { type Episode } from '../data/episodes';
 
 type PlayerContextData = {
   episodeList: Episode[];
@@ -24,7 +17,7 @@ type PlayerContextData = {
   hasNext: boolean;
   hasPrevious: boolean;
   isLooping: boolean;
-  isShuffling
+  isShuffling: boolean;
 }
 
 type PlayerContextProviderProps = {
@@ -34,7 +27,7 @@ type PlayerContextProviderProps = {
 export const PlayerContext = createContext({} as PlayerContextData);
 
 export function PlayerContextProvider({ children }: PlayerContextProviderProps) {
-  const [episodeList, setEpisodeList] = useState([]);
+  const [episodeList, setEpisodeList] = useState<Episode[]>([]);
   const [currentEpisodeIndex, setCurrentEpisodeIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isLooping, setIsLooping] = useState(false);
@@ -92,7 +85,7 @@ export function PlayerContextProvider({ children }: PlayerContextProviderProps) 
   }
 
   function clearPlayerState() {
-    setEpisodeList([])
+    setEpisodeList([]);
     setCurrentEpisodeIndex(0);
   }
 
@@ -101,28 +94,33 @@ export function PlayerContextProvider({ children }: PlayerContextProviderProps) 
       value={{
         episodeList,
         currentEpisodeIndex,
-        play,
         isPlaying,
+        play,
+        playList,
         togglePlay,
         setPlayingState,
-        playList,
         playNext,
         playPrevious,
+        toggleLoop,
+        toggleShuffle,
+        clearPlayerState,
         hasNext,
         hasPrevious,
         isLooping,
-        toggleLoop,
-        toggleShuffle,
         isShuffling,
-        clearPlayerState
       }}
-
     >
       {children}
     </PlayerContext.Provider>
-  )
+  );
 }
 
 export const usePlayer = () => {
-  return useContext(PlayerContext);
-}
+  const context = useContext(PlayerContext);
+
+  if (!context) {
+    throw new Error('usePlayer must be used within a PlayerContextProvider');
+  }
+
+  return context;
+};

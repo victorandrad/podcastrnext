@@ -9,12 +9,11 @@ import Link from 'next/link';
 import { format, parseISO } from 'date-fns';
 import ptBR from 'date-fns/locale/pt-BR';
 
-import { api } from '../services/api';
 import { convertDurationToTimeString } from '../utils/convertDurationToTimeString';
 import { usePlayer } from '../contexts/PlayerContext';
 
 import styles from './home.module.scss';
-import { getLatestEpisodes, getAllEpisodes, Episode } from '../data/episodes';
+import { getLatestEpisodes, getAllEpisodes, type Episode } from '../data/episodes';
 
 interface HomeProps {
   latestEpisodes: Episode[];
@@ -53,8 +52,8 @@ export default function Home({ latestEpisodes, allEpisodes }: HomeProps) {
                   </Link>
                   <p>{episode.members}</p>
                   <div className={styles.episodeMeta}>
-                    <span>{format(parseISO(episode.publishedAt), 'd MMM yy', { locale: ptBR })}</span>
-                    <span>{convertDurationToTimeString(episode.duration)}</span>
+                    <span>{format(parseISO(episode.published_at), 'd MMM yy', { locale: ptBR })}</span>
+                    <span>{convertDurationToTimeString(episode.file.duration)}</span>
                   </div>
                 </div>
 
@@ -104,9 +103,9 @@ export default function Home({ latestEpisodes, allEpisodes }: HomeProps) {
                   </td>
                   <td>{episode.members}</td>
                   <td style={{ width: 100 }}>
-                    {format(parseISO(episode.publishedAt), 'd MMM yy', { locale: ptBR })}
+                    {format(parseISO(episode.published_at), 'd MMM yy', { locale: ptBR })}
                   </td>
-                  <td>{convertDurationToTimeString(episode.duration)}</td>
+                  <td>{convertDurationToTimeString(episode.file.duration)}</td>
                   <td>
                     <button
                       type="button"

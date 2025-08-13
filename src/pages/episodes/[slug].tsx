@@ -44,8 +44,8 @@ export default function Episode({ episode }: EpisodeProps) {
       <header>
         <h1>{episode.title}</h1>
         <span>{episode.members}</span>
-        <span>{format(parseISO(episode.publishedAt), 'd MMM yy', { locale: ptBR })}</span>
-        <span>{convertDurationToTimeString(episode.duration)}</span>
+        <span>{format(parseISO(episode.published_at), 'd MMM yy', { locale: ptBR })}</span>
+        <span>{convertDurationToTimeString(episode.file.duration)}</span>
       </header>
 
       <div
