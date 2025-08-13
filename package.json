@@ -9,6 +9,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
+    "build:local": "NODE_ENV=production next build",
     "clean": "rm -rf .next out"
   },
   "dependencies": {

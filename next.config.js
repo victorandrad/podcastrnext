@@ -1,12 +1,9 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // output: 'export' só é usado durante o build para produção
-  // Em desenvolvimento, o Next.js roda normalmente
-  ...(process.env.NODE_ENV === 'production' && {
-    output: 'export',
-    trailingSlash: true,
-    basePath: '/podcastrnext'
-  }),
+  // Configuração para build estático
+  output: 'export',
+  trailingSlash: true,
+  basePath: process.env.NODE_ENV === 'production' ? '/podcastrnext' : '',
   images: {
     unoptimized: true,
     remotePatterns: [
@@ -23,6 +20,10 @@ const nextConfig = {
         pathname: '/**',
       },
     ],
+  },
+  // Garantir que arquivos estáticos sejam copiados
+  experimental: {
+    outputFileTracingRoot: undefined,
   },
 }
 
