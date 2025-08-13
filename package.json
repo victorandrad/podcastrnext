@@ -9,8 +9,6 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "deploy": "npm run build && touch out/.nojekyll && git add out/ && git commit -m \"Deploy to GitHub Pages\" && git push origin master",
-    "deploy:gh-pages": "npm run build && touch out/.nojekyll && gh-pages -d out",
     "clean": "rm -rf .next out"
   },
   "dependencies": {

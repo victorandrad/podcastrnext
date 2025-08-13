@@ -1,4 +1,4 @@
-name: Deploy to GitHub Pages (Simple)
+name: Deploy to GitHub Pages
 
 on:
   push:
@@ -48,8 +48,11 @@ jobs:
         echo "✅ Arquivo .nojekyll criado"
     
     - name: Deploy to GitHub Pages
-      uses: peaceiris/actions-gh-pages@v3
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_dir: ./out
-        cname: # Deixe vazio se não tiver domínio customizado
+      run: |
+        echo "🚀 Fazendo deploy para GitHub Pages..."
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git add out/
+        git commit -m "Deploy to GitHub Pages [skip ci]" || exit 0
+        git push origin master
+        echo "✅ Deploy concluído"

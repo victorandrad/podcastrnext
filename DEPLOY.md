@@ -14,7 +14,7 @@ Este guia explica como fazer deploy do Podcastr Next.js para GitHub Pages usando
 
 1. Vá para **Settings** > **Pages** no seu repositório
 2. Em **Source**, selecione **Deploy from a branch**
-3. Selecione a branch **gh-pages** (será criada automaticamente)
+3. Selecione a branch **master** (nossa branch principal)
 4. Clique em **Save**
 
 ### 2. Configurar Secrets (se necessário)
@@ -23,7 +23,7 @@ O workflow usa `GITHUB_TOKEN` que é fornecido automaticamente pelo GitHub.
 
 ## 🚀 Deploy Automático
 
-### Opção 1: Deploy via GitHub Actions (Recomendado)
+### Deploy via GitHub Actions (Recomendado)
 
 1. **Push para master branch:**
    ```bash
@@ -34,24 +34,12 @@ O workflow usa `GITHUB_TOKEN` que é fornecido automaticamente pelo GitHub.
 
 2. **Verificar deploy:**
    - Vá para **Actions** no GitHub
-   - O workflow "Deploy to GitHub Pages (Simple)" será executado automaticamente
+   - O workflow "Deploy to GitHub Pages" será executado automaticamente
    - Aguarde a conclusão
 
 3. **Acessar o site:**
    - Vá para **Settings** > **Pages**
    - O link estará disponível após o deploy
-
-### Opção 2: Deploy Manual
-
-1. **Build:**
-   ```bash
-   npm run build
-   ```
-
-2. **Deploy via gh-pages:**
-   ```bash
-   npm run deploy:gh-pages
-   ```
 
 ## 📡 Dados Estáticos (Sem Servidor)
 
@@ -62,7 +50,7 @@ O projeto usa **dados estáticos** embutidos no código:
 - **Arquivo de dados**: `src/data/episodes.ts` (contém episódios mockados)
 - **Sem servidor**: Não há necessidade de JSON Server
 - **Build estático**: Todos os dados são incluídos durante o build
-- **Deploy simples**: Apenas build e deploy, sem dependências externas
+- **Deploy direto**: Arquivos estáticos são commitados na branch master
 
 ### Vantagens
 
@@ -71,6 +59,7 @@ O projeto usa **dados estáticos** embutidos no código:
 - ✅ **Sem dependências** - Não precisa de JSON Server ou APIs externas
 - ✅ **GitHub Pages** - Funciona perfeitamente com hospedagem estática
 - ✅ **Sem Vercel** - Deploy direto para GitHub Pages
+- ✅ **Branch única** - Tudo fica na branch master
 
 ## 📁 Estrutura de Deploy
 
@@ -114,9 +103,6 @@ npm run build
 
 # Limpar build
 npm run clean
-
-# Deploy manual
-npm run deploy:gh-pages
 ```
 
 ## 🌐 URLs
@@ -129,16 +115,17 @@ npm run deploy:gh-pages
 - [ ] Build executa sem erros
 - [ ] Diretório `out/` é criado automaticamente
 - [ ] Workflow GitHub Actions executa
+- [ ] Arquivos estáticos são commitados na master
 - [ ] Site está acessível no GitHub Pages
 - [ ] Imagens e assets carregam corretamente
 - [ ] Navegação entre páginas funciona
 
 ## 🔄 Workflow GitHub Actions
 
-### Deploy to GitHub Pages (Simple)
+### Deploy to GitHub Pages
 - **Trigger:** Push para master
 - **Função:** Build e deploy automático
-- **Resultado:** Site publicado no GitHub Pages
+- **Resultado:** Arquivos estáticos commitados na master
 
 ## 🎯 Características do Build
 
@@ -162,6 +149,19 @@ const nextConfig = {
 - **Descrições** em HTML
 - **URLs de áudio** mockadas
 
+## 🔐 Configuração do GitHub Pages
+
+### Branch Source
+- **Source:** Deploy from a branch
+- **Branch:** master
+- **Folder:** / (root)
+
+### Por que master?
+- ✅ **Simplicidade** - Uma única branch para código e deploy
+- ✅ **Histórico** - Todos os deploys ficam no histórico da master
+- ✅ **Rastreabilidade** - Fácil ver o que foi deployado quando
+- ✅ **Sem branches extras** - Não precisa gerenciar gh-pages
+
 ---
 
-**Nota:** O deploy automático acontece sempre que você fizer push para a branch `master`. O build é completamente estático e não requer servidor ou APIs externas.
+**Nota:** O deploy automático acontece sempre que você fizer push para a branch `master`. Os arquivos estáticos são commitados diretamente na master, mantendo tudo em um só lugar.
