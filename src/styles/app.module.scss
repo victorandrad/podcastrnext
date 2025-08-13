@@ -1,14 +1,18 @@
 .wrapper{
     display: flex;
     max-width: 100vw;
-    overflow-x: hidden;
+    overflow: hidden;
+    height: 100vh;
 
     @media (max-width: 768px) {
         flex-direction: column;
+        height: 100vh;
     }
 
     main {
         flex: 1;
         min-width: 0; // Previne que o conteúdo force o container a crescer
+        height: 100%;
+        overflow: hidden; // Previne scroll duplo
     }
 }
