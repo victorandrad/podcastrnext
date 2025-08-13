@@ -33,24 +33,35 @@ jobs:
         
         # Aguardar inicialização
         echo "⏳ Aguardando inicialização..."
-        sleep 5
+        sleep 8
         
         # Verificar se está rodando
         echo "🔍 Verificando status..."
         npm run server:check
         
-        # Testar endpoint
+        # Testar endpoint com retry
         echo "📊 Testando endpoint /episodes..."
-        EPISODES=$(curl -s http://localhost:3333/episodes)
-        if [ -n "$EPISODES" ]; then
-          echo "✅ Endpoint /episodes respondeu"
-          echo "📄 Primeiros 200 caracteres da resposta:"
-          echo "$EPISODES" | head -c 200
-          echo ""
-        else
-          echo "❌ Endpoint /episodes não respondeu"
-          exit 1
-        fi
+        for i in {1..10}; do
+          EPISODES=$(curl -s http://localhost:3333/episodes)
+          if [ -n "$EPISODES" ]; then
+            echo "✅ Endpoint /episodes respondeu na tentativa $i"
+            break
+          fi
+          
+          if [ $i -eq 10 ]; then
+            echo "❌ Endpoint /episodes não respondeu após 10 tentativas"
+            echo "📋 Logs do servidor:"
+            cat json-server.log || echo "Nenhum log encontrado"
+            exit 1
+          fi
+          
+          echo "Tentativa $i falhou, aguardando..."
+          sleep 2
+        done
+        
+        echo "📄 Primeiros 200 caracteres da resposta:"
+        echo "$EPISODES" | head -c 200
+        echo ""
         
         # Testar endpoint específico
         echo "🎯 Testando endpoint específico..."
@@ -59,6 +70,16 @@ jobs:
           echo "✅ Endpoint específico respondeu"
         else
           echo "❌ Endpoint específico não respondeu"
+          exit 1
+        fi
+        
+        # Verificar estrutura dos dados
+        echo "🔍 Verificando estrutura dos dados..."
+        EPISODES_COUNT=$(echo "$EPISODES" | jq 'length' 2>/dev/null || echo "0")
+        if [ "$EPISODES_COUNT" -gt 0 ]; then
+          echo "✅ Dados válidos encontrados: $EPISODES_COUNT episódios"
+        else
+          echo "❌ Dados inválidos ou vazios"
           exit 1
         fi
         

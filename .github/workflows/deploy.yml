@@ -21,20 +21,22 @@ jobs:
     - name: Install dependencies
       run: npm ci
     
-    - name: Start JSON Server and wait
+    - name: Start JSON Server
       run: |
         echo "🚀 Iniciando servidor JSON..."
         npm run server:start
         
         echo "⏳ Aguardando servidor estar disponível..."
-        for i in {1..30}; do
+        for i in {1..60}; do
           if curl -s http://localhost:3333/episodes > /dev/null 2>&1; then
             echo "✅ Servidor JSON rodando em http://localhost:3333"
             break
           fi
           
-          if [ $i -eq 30 ]; then
-            echo "❌ Timeout: Servidor JSON não respondeu em 30 segundos"
+          if [ $i -eq 60 ]; then
+            echo "❌ Timeout: Servidor JSON não respondeu em 60 segundos"
+            echo "📋 Logs do servidor:"
+            cat json-server.log || echo "Nenhum log encontrado"
             exit 1
           fi
           
@@ -43,8 +45,25 @@ jobs:
         done
         
         echo "📊 Testando endpoint de episódios..."
-        curl -s http://localhost:3333/episodes | head -c 100
-        echo ""
+        EPISODES=$(curl -s http://localhost:3333/episodes)
+        if [ -n "$EPISODES" ]; then
+          echo "✅ Endpoint /episodes respondeu com dados"
+          echo "📄 Primeiros 200 caracteres da resposta:"
+          echo "$EPISODES" | head -c 200
+          echo ""
+        else
+          echo "❌ Endpoint /episodes não retornou dados"
+          exit 1
+        fi
+        
+        echo "🎯 Testando endpoint específico..."
+        FIRST_EPISODE=$(curl -s http://localhost:3333/episodes/a-importancia-da-contribuicao-em-open-source)
+        if [ -n "$FIRST_EPISODE" ]; then
+          echo "✅ Endpoint específico respondeu"
+        else
+          echo "❌ Endpoint específico não respondeu"
+          exit 1
+        fi
     
     - name: Build application
       run: |
