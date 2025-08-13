@@ -111,7 +111,7 @@ export default function Home({ latestEpisodes, allEpisodes }: HomeProps) {
                       type="button"
                       onClick={() => playList(episodeList, index + latestEpisodes.length)}
                     >
-                      <img src="/play.svg" alt="Tocar episódio" />
+                      <img src="/play-green.svg" alt="Tocar episódio" />
                     </button>
                   </td>
                 </tr>

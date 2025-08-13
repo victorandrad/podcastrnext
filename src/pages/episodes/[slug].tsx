@@ -37,7 +37,7 @@ export default function Episode({ episode }: EpisodeProps) {
           style={{ objectFit: 'cover' }}
         />
         <button type="button" onClick={() => play(episode)}>
-          <img src="/play.svg" alt="Tocar episódio" />
+          <img src="/play-green.svg" alt="Tocar episódio" />
         </button>
       </div>
 
