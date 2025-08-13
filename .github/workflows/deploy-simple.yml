@@ -55,14 +55,15 @@ jobs:
           cache: ${{ steps.detect-package-manager.outputs.manager }}
       - name: Install dependencies
         run: ${{ steps.detect-package-manager.outputs.manager }} ${{ steps.detect-package-manager.outputs.command }}
-      - name: Upload dependencies cache
-        uses: actions/upload-artifact@v4
+      - name: Cache dependencies
+        uses: actions/cache@v4
         with:
-          name: dependencies
           path: |
             node_modules
             .next/cache
-          retention-days: 1
+          key: ${{ runner.os }}-deps-${{ hashFiles('**/package-lock.json', '**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-deps-
 
   # Build job
   build:
@@ -93,13 +94,18 @@ jobs:
         with:
           node-version: "20"
           cache: ${{ steps.detect-package-manager.outputs.manager }}
-      - name: Download dependencies cache
-        uses: actions/download-artifact@v4
+      - name: Restore dependencies cache
+        uses: actions/cache@v4
         with:
-          name: dependencies
           path: |
             node_modules
             .next/cache
+          key: ${{ runner.os }}-deps-${{ hashFiles('**/package-lock.json', '**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-deps-
+      - name: Install dependencies if cache miss
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: ${{ steps.detect-package-manager.outputs.manager }} ${{ steps.detect-package-manager.outputs.command }}
       - name: Setup Pages
         uses: actions/configure-pages@v5
         with:
