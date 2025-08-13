@@ -3,7 +3,8 @@ const nextConfig = {
   // Configuração para build estático
   output: 'export',
   trailingSlash: true,
-  basePath: process.env.NODE_ENV === 'production' ? '/podcastrnext' : '',
+  // Remover basePath para arquivos estáticos
+  basePath: '',
   images: {
     unoptimized: true,
     remotePatterns: [
