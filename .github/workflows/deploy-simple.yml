@@ -2,57 +2,95 @@ name: Deploy to GitHub Pages
 
 on:
   push:
-    branches: [ master ]
+    branches:
+      - master
+      - main
+  pull_request:
+    branches:
+      - master
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
 
 jobs:
-  deploy:
+  install:
     runs-on: ubuntu-latest
-    
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-    
-    - name: Setup Node.js 18
-      uses: actions/setup-node@v4
-      with:
-        node-version: 18.x
-        cache: 'npm'
-    
-    - name: Install dependencies
-      run: npm ci
-    
-    - name: Build application
-      run: |
-        echo "🔨 Executando build..."
-        npm run build
-        echo "✅ Build concluído"
-    
-    - name: Verify build output
-      run: |
-        echo "🔍 Verificando arquivos de build..."
-        if [ -d "out" ]; then
-          echo "✅ Diretório out/ criado"
-          ls -la out/
-          echo ""
-          echo "📄 Verificando arquivos HTML..."
-          find out/ -name "*.html" | head -5
-        else
-          echo "❌ Diretório out/ não foi criado"
-          exit 1
-        fi
-    
-    - name: Create .nojekyll file
-      run: |
-        echo "📝 Criando arquivo .nojekyll..."
-        touch out/.nojekyll
-        echo "✅ Arquivo .nojekyll criado"
-    
-    - name: Deploy to GitHub Pages
-      run: |
-        echo "🚀 Fazendo deploy para GitHub Pages..."
-        git config --local user.email "action@github.com"
-        git config --local user.name "GitHub Action"
-        git add out/
-        git commit -m "Deploy to GitHub Pages [skip ci]" || exit 0
-        git push origin master
-        echo "✅ Deploy concluído"
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18.x'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Cache node_modules
+        uses: actions/cache@v3
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+
+  build:
+    needs: install
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Restore cache
+        uses: actions/cache@v3
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+
+      - name: Build
+        run: npm run build
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-files
+          path: out
+          retention-days: 1
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main'
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: build-files
+          path: out
+
+      - name: Setup Pages
+        id: pages
+        uses: actions/configure-pages@v4
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: './out'
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
