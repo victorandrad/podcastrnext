@@ -3,7 +3,6 @@ import ptBR from 'date-fns/locale/pt-BR';
 import { GetStaticPaths, GetStaticProps } from 'next';
 import Head from 'next/head';
 import Image from 'next/image';
-import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { usePlayer } from '../../contexts/PlayerContext';
 import { api } from '../../services/api';
@@ -38,18 +37,16 @@ export default function Episode ({episode}: EpisodeProps) {
                 <title>{episode.title} | Podcastr</title>
             </Head>
             <div className={styles.thumbnailContainer}>
-                <Link href="/">
-                    <button type="button">
-                        <img src="/arrow-left.svg" alt="Voltar"/>
-                    </button>
-                </Link>
+                <button type="button" onClick={() => router.push('/')}>
+                    <img src="/arrow-left.svg" alt="Voltar"/>
+                </button>
 
                 <Image 
                     width={700} 
                     height={160} 
                     src={episode.thumbnail} 
                     alt={episode.title} 
-                    objectFit="cover"
+                    style={{ objectFit: 'cover' }}
                 />
 
                 <button type="button" onClick={() => play(episode)}>

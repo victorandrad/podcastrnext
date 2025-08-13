@@ -1,0 +1,73 @@
+name: Test JSON Server
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  test-server:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Setup Node.js 18
+      uses: actions/setup-node@v4
+      with:
+        node-version: 18.x
+        cache: 'npm'
+    
+    - name: Install dependencies
+      run: npm ci
+    
+    - name: Test JSON Server
+      run: |
+        echo "🧪 Testando servidor JSON..."
+        
+        # Iniciar servidor
+        echo "🚀 Iniciando servidor..."
+        npm run server:start
+        
+        # Aguardar inicialização
+        echo "⏳ Aguardando inicialização..."
+        sleep 5
+        
+        # Verificar se está rodando
+        echo "🔍 Verificando status..."
+        npm run server:check
+        
+        # Testar endpoint
+        echo "📊 Testando endpoint /episodes..."
+        EPISODES=$(curl -s http://localhost:3333/episodes)
+        if [ -n "$EPISODES" ]; then
+          echo "✅ Endpoint /episodes respondeu"
+          echo "📄 Primeiros 200 caracteres da resposta:"
+          echo "$EPISODES" | head -c 200
+          echo ""
+        else
+          echo "❌ Endpoint /episodes não respondeu"
+          exit 1
+        fi
+        
+        # Testar endpoint específico
+        echo "🎯 Testando endpoint específico..."
+        FIRST_EPISODE=$(curl -s http://localhost:3333/episodes/a-importancia-da-contribuicao-em-open-source)
+        if [ -n "$FIRST_EPISODE" ]; then
+          echo "✅ Endpoint específico respondeu"
+        else
+          echo "❌ Endpoint específico não respondeu"
+          exit 1
+        fi
+        
+        # Parar servidor
+        echo "🛑 Parando servidor..."
+        npm run server:stop
+        
+        echo "🎉 Todos os testes passaram!"
+    
+    - name: Cleanup
+      run: npm run server:stop
+      if: always()

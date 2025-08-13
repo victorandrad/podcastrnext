@@ -2,30 +2,44 @@
   "name": "podcastrnext",
   "version": "0.1.0",
   "private": true,
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
+    "dev": "concurrently \"npm run server\" \"next dev\"",
+    "dev:server": "json-server server.json -w -d 750 -p 3333",
+    "dev:next": "next dev",
+    "build": "npm run build:check && NODE_ENV=production next build",
+    "build:check": "npm run check:server",
     "start": "next start",
-    "export": "next export",
-    "server": "json-server server.json -w -d 750 -p 3333 >> ./json-server.log 2>&1 </dev/null &",
-    "deploy": "next build && next export && git add out/ && git commit -m \"Deploy gh-pages\" && git subtree push --prefix out origin gh-pages"
+    "export": "NODE_ENV=production next export",
+    "server": "json-server server.json -w -d 750 -p 3333",
+    "server:start": "json-server server.json -w -d 750 -p 3333 --host 0.0.0.0 >> ./json-server.log 2>&1 &",
+    "server:stop": "pkill -f 'json-server' || true",
+    "server:check": "curl -s http://localhost:3333/episodes > /dev/null && echo 'Servidor rodando' || echo 'Servidor não responde'",
+    "check:server": "curl -s http://localhost:3333/episodes > /dev/null || (echo 'Servidor JSON não está rodando. Iniciando...' && npm run server:start && sleep 5)",
+    "deploy": "npm run build && npm run export && touch out/.nojekyll && git add out/ && git commit -m \"Deploy to GitHub Pages\" && git push origin main",
+    "deploy:gh-pages": "npm run build && npm run export && touch out/.nojekyll && gh-pages -d out",
+    "clean": "rm -rf .next out json-server.log"
   },
   "dependencies": {
-    "@babel/runtime": "^7.14.0",
-    "axios": "^0.21.1",
+    "@babel/runtime": "^7.23.0",
+    "axios": "^1.6.0",
     "babel-plugin-transform-define": "^2.0.0",
-    "date-fns": "^2.21.1",
-    "gh-pages": "^3.1.0",
-    "next": "10.1.3",
-    "rc-slider": "^9.7.2",
-    "react": "^17.0.2",
-    "react-dom": "^17.0.2",
-    "sass": "^1.32.11"
+    "date-fns": "^2.30.0",
+    "gh-pages": "^6.1.0",
+    "next": "^14.0.0",
+    "rc-slider": "^10.1.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "sass": "^1.69.0"
   },
   "devDependencies": {
-    "@types/node": "^14.14.41",
-    "@types/react": "^17.0.3",
-    "json-server": "^0.16.3",
-    "typescript": "^4.2.4"
+    "@types/node": "^18.0.0",
+    "@types/react": "^18.2.0",
+    "@types/react-dom": "^18.2.0",
+    "concurrently": "^8.2.2",
+    "json-server": "^0.17.4",
+    "typescript": "^5.0.0"
   }
 }

@@ -1,7 +1,14 @@
 .wrapper{
     display: flex;
+    max-width: 100vw;
+    overflow-x: hidden;
+
+    @media (max-width: 768px) {
+        flex-direction: column;
+    }
 
     main {
         flex: 1;
+        min-width: 0; // Previne que o conteúdo force o container a crescer
     }
 }

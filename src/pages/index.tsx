@@ -55,22 +55,23 @@ export default function Home({ latestEpisodes, allEpisodes }: HomeProps) {
                   height={192}
                   src={episode.thumbnail}
                   alt={episode.title}
-                  objectFit="cover"
+                  style={{ objectFit: 'cover' }}
                 />
 
                 <div className={styles.episodeDetails}>
                   <Link href={`/episodes/${episode.id}`}>
-                    <a>{episode.title}</a>
+                    {episode.title}
                   </Link>
                   <p>{episode.members}</p>
-                  <span>{episode.publishedAt}</span>
-                  <span>{episode.durationAsString}</span>
+                  <div className={styles.episodeMeta}>
+                    <span>{episode.publishedAt}</span>
+                    <span>{episode.durationAsString}</span>
+                  </div>
                 </div>
 
                 <button type="button" onClick={()=> playList(episodeList, index)}>
                   <img src="/play-green.svg" alt="Tocar episodio" />
                 </button>
-
               </li>
             );
           })}
@@ -101,12 +102,12 @@ export default function Home({ latestEpisodes, allEpisodes }: HomeProps) {
                       height={120}
                       src={episode.thumbnail}
                       alt={episode.title}
-                      objectFit="cover"
+                      style={{ objectFit: 'cover' }}
                     />
                   </td>
                   <td>
                   <Link href={`/episodes/${episode.id}`}>
-                    <a>{episode.title}</a>
+                    {episode.title}
                   </Link>
                   </td>
                   <td>{episode.members}</td>

@@ -11,6 +11,18 @@
     align-items: center;
     justify-content: space-between;
 
+    @media (max-width: 1200px) {
+        width: 22rem;
+        padding: 2rem;
+    }
+
+    @media (max-width: 768px) {
+        width: 100%;
+        height: auto;
+        min-height: 100vh;
+        padding: 2rem 1rem;
+    }
+
     header {
         display: flex;
         align-items: center;
@@ -68,6 +80,11 @@
     display: flex;
     align-items: center;
     justify-content: center;
+
+    @media (max-width: 768px) {
+        height: 15rem;
+        padding: 2rem;
+    }
     
 }
 
@@ -101,6 +118,11 @@
     justify-content: center;
     margin-top: 2.5rem;
     gap: 1.5rem;
+
+    @media (max-width: 768px) {
+        gap: 1rem;
+        margin-top: 2rem;
+    }
 
     button {
         background: transparent;

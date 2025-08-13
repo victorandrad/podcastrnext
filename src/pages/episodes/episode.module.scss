@@ -3,6 +3,14 @@
     padding: 3rem 2rem;
     margin: 0 auto;
 
+    @media (max-width: 768px) {
+        padding: 2rem 1rem;
+    }
+
+    @media (max-width: 480px) {
+        padding: 1rem;
+    }
+
     .thumbnailContainer { 
         position: relative;
 
@@ -19,6 +27,11 @@
             border: 0;
 
             font-size: 0;
+
+            @media (max-width: 480px) {
+                width: 2.5rem;
+                height: 2.5rem;
+            }
 
             &:first-child {
                 left: 0;
@@ -49,16 +62,30 @@
         h1 {
             margin-top: 2rem;
             margin-bottom: 1.5rem;
+
+            @media (max-width: 480px) {
+                font-size: 1.5rem;
+            }
         }
 
         span{
             display: inline-block;
             font-size: 0.875rem;
 
+            @media (max-width: 480px) {
+                display: block;
+                margin-bottom: 0.5rem;
+            }
+
             & + span {
                 margin-left: 1rem;
                 padding-left: 1rem;
                 position: relative;
+
+                @media (max-width: 480px) {
+                    margin-left: 0;
+                    padding-left: 0;
+                }
 
                 &::before {
                     content: "";
@@ -70,6 +97,10 @@
                     left: 0;
                     top: 50%;
                     transform: translate(-50%, -50%);
+
+                    @media (max-width: 480px) {
+                        display: none;
+                    }
                 }
             }
         }
