@@ -6,22 +6,12 @@
     "node": ">=18.0.0"
   },
   "scripts": {
-    "dev": "concurrently \"npm run server\" \"next dev\"",
-    "dev:server": "json-server server.json -w -d 750 -p 3333",
-    "dev:next": "next dev",
-    "build": "npm run build:check && NODE_ENV=production next build",
-    "build:check": "npm run check:server",
+    "dev": "next dev",
+    "build": "next build",
     "start": "next start",
-    "export": "NODE_ENV=production next export",
-    "server": "json-server server.json -w -d 750 -p 3333",
-    "server:start": "json-server server.json -w -d 750 -p 3333 --host 0.0.0.0 --no-cors --no-gzip --no-cli >> ./json-server.log 2>&1 &",
-    "server:stop": "pkill -f 'json-server' || true",
-    "server:check": "curl -s http://localhost:3333/episodes > /dev/null && echo 'Servidor rodando' || echo 'Servidor não responde'",
-    "server:debug": "./scripts/debug-server.sh",
-    "check:server": "curl -s http://localhost:3333/episodes > /dev/null || (echo 'Servidor JSON não está rodando. Iniciando...' && npm run server:start && sleep 8)",
-    "deploy": "npm run build && npm run export && touch out/.nojekyll && git add out/ && git commit -m \"Deploy to GitHub Pages\" && git push origin master",
-    "deploy:gh-pages": "npm run build && npm run export && touch out/.nojekyll && gh-pages -d out",
-    "clean": "rm -rf .next out json-server.log"
+    "deploy": "npm run build && touch out/.nojekyll && git add out/ && git commit -m \"Deploy to GitHub Pages\" && git push origin master",
+    "deploy:gh-pages": "npm run build && touch out/.nojekyll && gh-pages -d out",
+    "clean": "rm -rf .next out"
   },
   "dependencies": {
     "@babel/runtime": "^7.23.0",
@@ -39,8 +29,6 @@
     "@types/node": "^18.0.0",
     "@types/react": "^18.2.0",
     "@types/react-dom": "^18.2.0",
-    "concurrently": "^8.2.2",
-    "json-server": "^0.17.4",
     "typescript": "^5.0.0"
   }
 }

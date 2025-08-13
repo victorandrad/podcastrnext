@@ -1,119 +1,92 @@
-import { format, parseISO } from 'date-fns';
-import ptBR from 'date-fns/locale/pt-BR';
 import { GetStaticPaths, GetStaticProps } from 'next';
 import Head from 'next/head';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
-import { usePlayer } from '../../contexts/PlayerContext';
-import { api } from '../../services/api';
+import { format, parseISO } from 'date-fns';
+import ptBR from 'date-fns/locale/pt-BR';
+
 import { convertDurationToTimeString } from '../../utils/convertDurationToTimeString';
+import { usePlayer } from '../../contexts/PlayerContext';
+
 import styles from './episode.module.scss';
+import { getAllEpisodes, getEpisodeBySlug, type Episode } from '../../data/episodes';
 
+interface EpisodeProps {
+  episode: Episode;
+}
 
+export default function Episode({ episode }: EpisodeProps) {
+  const router = useRouter();
+  const { play } = usePlayer();
 
-type Episode = {
-    id: string;
-    title: string;
-    thumbnail: string;
-    members: string;
-    publishedAt: string;
-    description: string;
-    duration: number;
-    durationAsString: string;
-    url: string;
-  }
-  
-  type EpisodeProps = {
-    episode: Episode;
-  }
+  return (
+    <div className={styles.episode}>
+      <Head>
+        <title>{episode.title} | Podcastr</title>
+      </Head>
 
-export default function Episode ({episode}: EpisodeProps) {
-    const router = useRouter();
-    const { play } = usePlayer();
+      <div className={styles.thumbnailContainer}>
+        <button type="button" onClick={() => router.back()}>
+          <img src="/arrow-left.svg" alt="Voltar" />
+        </button>
+        <Image
+          width={700}
+          height={160}
+          src={episode.thumbnail}
+          alt={episode.title}
+          style={{ objectFit: 'cover' }}
+        />
+        <button type="button" onClick={() => play(episode)}>
+          <img src="/play.svg" alt="Tocar episódio" />
+        </button>
+      </div>
 
-    return (
-        <div className={styles.episode}> 
-            <Head>
-                <title>{episode.title} | Podcastr</title>
-            </Head>
-            <div className={styles.thumbnailContainer}>
-                <button type="button" onClick={() => router.push('/')}>
-                    <img src="/arrow-left.svg" alt="Voltar"/>
-                </button>
+      <header>
+        <h1>{episode.title}</h1>
+        <span>{episode.members}</span>
+        <span>{format(parseISO(episode.publishedAt), 'd MMM yy', { locale: ptBR })}</span>
+        <span>{convertDurationToTimeString(episode.duration)}</span>
+      </header>
 
-                <Image 
-                    width={700} 
-                    height={160} 
-                    src={episode.thumbnail} 
-                    alt={episode.title} 
-                    style={{ objectFit: 'cover' }}
-                />
-
-                <button type="button" onClick={() => play(episode)}>
-                    <img src="/play.svg" alt="Tocar episodio"/>
-                </button>
-            </div>
-
-            <header>
-                <h1>{episode.title}</h1>
-                <span>{episode.members}</span>
-                <span>{episode.publishedAt}</span>
-                <span>{episode.durationAsString}</span>
-            </header>
-
-            <div 
-                className={styles.description} 
-                dangerouslySetInnerHTML={{ __html: episode.description }}
-            />
-
-        </div>
-    );
+      <div
+        className={styles.description}
+        dangerouslySetInnerHTML={{ __html: episode.description }}
+      />
+    </div>
+  );
 }
 
 export const getStaticPaths: GetStaticPaths = async () => {
-    const { data } = await api.get('/episodes', {
-        params: {
-            _limit: 2,
-            _sort: 'published_at',
-            _order: 'desc'
-        }
-    });
+  const episodes = getAllEpisodes();
 
-    const paths = data.map(episode => {
-        return {
-            params: {
-                slug: episode.id
-            }
-        }
-    });
-
+  const paths = episodes.map(episode => {
     return {
-        paths,
-        fallback: false
+      params: {
+        slug: episode.id,
+      },
     };
-}
+  });
+
+  return {
+    paths,
+    fallback: false,
+  };
+};
 
 export const getStaticProps: GetStaticProps = async (ctx) => {
-    const { slug } = ctx.params;
+  const { slug } = ctx.params;
 
-    const { data } = await api.get(`/episodes/${slug}`);
-  
-    const episode = {
-        id: data.id,
-        title: data.title,
-        thumbnail: data.thumbnail,
-        members: data.members,
-        publishedAt: format(parseISO(data.published_at), 'd MMM yy', { locale: ptBR }),
-        duration: Number(data.file.duration),
-        durationAsString: convertDurationToTimeString(Number(data.file.duration)),
-        description: data.description,
-        url: data.file.url,
-    }
-  
+  const episode = getEpisodeBySlug(slug as string);
+
+  if (!episode) {
     return {
-      props: {
-        episode
-      },
-      revalidate: 60 * 60 * 24
-    }
+      notFound: true,
+    };
   }
+
+  return {
+    props: {
+      episode,
+    },
+  };
+};

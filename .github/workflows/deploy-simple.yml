@@ -1,0 +1,55 @@
+name: Deploy to GitHub Pages (Simple)
+
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Setup Node.js 18
+      uses: actions/setup-node@v4
+      with:
+        node-version: 18.x
+        cache: 'npm'
+    
+    - name: Install dependencies
+      run: npm ci
+    
+    - name: Build application
+      run: |
+        echo "🔨 Executando build..."
+        npm run build
+        echo "✅ Build concluído"
+    
+    - name: Verify build output
+      run: |
+        echo "🔍 Verificando arquivos de build..."
+        if [ -d "out" ]; then
+          echo "✅ Diretório out/ criado"
+          ls -la out/
+          echo ""
+          echo "📄 Verificando arquivos HTML..."
+          find out/ -name "*.html" | head -5
+        else
+          echo "❌ Diretório out/ não foi criado"
+          exit 1
+        fi
+    
+    - name: Create .nojekyll file
+      run: |
+        echo "📝 Criando arquivo .nojekyll..."
+        touch out/.nojekyll
+        echo "✅ Arquivo .nojekyll criado"
+    
+    - name: Deploy to GitHub Pages
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./out
+        cname: # Deixe vazio se não tiver domínio customizado

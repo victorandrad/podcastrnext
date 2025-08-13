@@ -1,6 +1,6 @@
-# 🚀 Deploy para GitHub Pages
+# 🚀 Deploy para GitHub Pages (Build Simples)
 
-Este guia explica como fazer deploy do Podcastr Next.js para GitHub Pages.
+Este guia explica como fazer deploy do Podcastr Next.js para GitHub Pages usando um build estático simples.
 
 ## 📋 Pré-requisitos
 
@@ -34,7 +34,7 @@ O workflow usa `GITHUB_TOKEN` que é fornecido automaticamente pelo GitHub.
 
 2. **Verificar deploy:**
    - Vá para **Actions** no GitHub
-   - O workflow "Deploy to GitHub Pages" será executado automaticamente
+   - O workflow "Deploy to GitHub Pages (Simple)" será executado automaticamente
    - Aguarde a conclusão
 
 3. **Acessar o site:**
@@ -43,10 +43,9 @@ O workflow usa `GITHUB_TOKEN` que é fornecido automaticamente pelo GitHub.
 
 ### Opção 2: Deploy Manual
 
-1. **Build e export:**
+1. **Build:**
    ```bash
    npm run build
-   npm run export
    ```
 
 2. **Deploy via gh-pages:**
@@ -54,39 +53,29 @@ O workflow usa `GITHUB_TOKEN` que é fornecido automaticamente pelo GitHub.
    npm run deploy:gh-pages
    ```
 
-## 📡 Servidor Mockado (JSON Server)
+## 📡 Dados Estáticos (Sem Servidor)
 
 ### Como Funciona
 
-O projeto usa um **servidor JSON mockado** durante o build para fornecer dados dos podcasts:
+O projeto usa **dados estáticos** embutidos no código:
 
-- **Arquivo de dados**: `server.json` (contém episódios mockados)
-- **Servidor**: JSON Server rodando na porta 3333
-- **Endpoints**: `/episodes`, `/episodes/:id`
-- **Dados**: Episódios com thumbnails, descrições, durações, etc.
+- **Arquivo de dados**: `src/data/episodes.ts` (contém episódios mockados)
+- **Sem servidor**: Não há necessidade de JSON Server
+- **Build estático**: Todos os dados são incluídos durante o build
+- **Deploy simples**: Apenas build e deploy, sem dependências externas
 
-### Workflow de Deploy
+### Vantagens
 
-1. **Inicia servidor JSON** em background
-2. **Aguarda** servidor estar disponível (timeout: 30s)
-3. **Testa endpoints** para garantir funcionamento
-4. **Executa build** com dados mockados disponíveis
-5. **Exporta arquivos** estáticos
-6. **Para servidor** e faz deploy
-
-### Testes Automáticos
-
-O workflow inclui testes para garantir que o servidor funcione:
-
-- ✅ **Verificação de status** do servidor
-- ✅ **Teste do endpoint** `/episodes`
-- ✅ **Teste de endpoint específico** `/episodes/:id`
-- ✅ **Validação de resposta** dos dados
+- ✅ **Sem servidor** - Não precisa rodar servidor durante build
+- ✅ **Deploy rápido** - Build mais simples e rápido
+- ✅ **Sem dependências** - Não precisa de JSON Server ou APIs externas
+- ✅ **GitHub Pages** - Funciona perfeitamente com hospedagem estática
+- ✅ **Sem Vercel** - Deploy direto para GitHub Pages
 
 ## 📁 Estrutura de Deploy
 
 ```
-out/                    # Diretório de build
+out/                    # Diretório de build (criado automaticamente)
 ├── .nojekyll          # Arquivo para GitHub Pages
 ├── _next/             # Assets do Next.js
 ├── episodes/          # Páginas de episódios
@@ -98,26 +87,11 @@ out/                    # Diretório de build
 
 ### Problema: Build falha
 ```bash
-# Verificar se o servidor JSON está rodando
-npm run server:start
+# Verificar se há erros de TypeScript
+npm run build
 
-# Verificar se está acessível
-curl http://localhost:3333/episodes
-
-# Verificar logs
-cat json-server.log
-```
-
-### Problema: Servidor não inicia
-```bash
-# Verificar se a porta 3333 está livre
-lsof -i :3333
-
-# Parar processos existentes
-npm run server:stop
-
-# Iniciar novamente
-npm run server:start
+# Verificar se todos os imports estão corretos
+npm run dev
 ```
 
 ### Problema: Páginas não carregam
@@ -132,20 +106,14 @@ npm run server:start
 ## 📝 Comandos Úteis
 
 ```bash
+# Desenvolvimento
+npm run dev
+
+# Build
+npm run build
+
 # Limpar build
 npm run clean
-
-# Verificar servidor JSON
-npm run server:check
-
-# Iniciar servidor em background
-npm run server:start
-
-# Parar servidor
-npm run server:stop
-
-# Build local
-npm run build
 
 # Deploy manual
 npm run deploy:gh-pages
@@ -154,32 +122,46 @@ npm run deploy:gh-pages
 ## 🌐 URLs
 
 - **Desenvolvimento:** `http://localhost:3000`
-- **Servidor JSON:** `http://localhost:3333`
 - **Produção:** `https://[seu-usuario].github.io/podcastrnext`
 
 ## ✅ Checklist de Deploy
 
-- [ ] Servidor JSON está rodando
-- [ ] Endpoint `/episodes` responde
 - [ ] Build executa sem erros
-- [ ] Export gera arquivos estáticos
+- [ ] Diretório `out/` é criado automaticamente
 - [ ] Workflow GitHub Actions executa
 - [ ] Site está acessível no GitHub Pages
 - [ ] Imagens e assets carregam corretamente
 - [ ] Navegação entre páginas funciona
 
-## 🔄 Workflows GitHub Actions
+## 🔄 Workflow GitHub Actions
 
-### 1. Test JSON Server
-- **Trigger:** Push para master ou Pull Request
-- **Função:** Testa se o servidor JSON funciona
-- **Resultado:** Garante que dados mockados estão disponíveis
-
-### 2. Deploy to GitHub Pages
+### Deploy to GitHub Pages (Simple)
 - **Trigger:** Push para master
-- **Função:** Build, export e deploy
+- **Função:** Build e deploy automático
 - **Resultado:** Site publicado no GitHub Pages
+
+## 🎯 Características do Build
+
+### Configuração Next.js
+```javascript
+// next.config.js
+const nextConfig = {
+  output: 'export',           // Export estático automático
+  trailingSlash: true,        // URLs com barra final
+  basePath: '/podcastrnext',  // Base path para GitHub Pages
+  images: {
+    unoptimized: true,        // Imagens sem otimização
+  },
+}
+```
+
+### Dados Estáticos
+- **12 episódios** com informações completas
+- **Thumbnails** de imagens dos podcasts
+- **Metadados** (duração, participantes, datas)
+- **Descrições** em HTML
+- **URLs de áudio** mockadas
 
 ---
 
-**Nota:** O deploy automático acontece sempre que você fizer push para a branch `master`. O servidor JSON é iniciado automaticamente durante o build para garantir que os dados estejam disponíveis.
+**Nota:** O deploy automático acontece sempre que você fizer push para a branch `master`. O build é completamente estático e não requer servidor ou APIs externas.
