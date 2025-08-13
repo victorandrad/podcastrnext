@@ -2,13 +2,17 @@
     max-width: 45rem;
     padding: 3rem 2rem;
     margin: 0 auto;
+    min-height: 100vh;
+    padding-bottom: 120px; // Espaço para o player
 
     @media (max-width: 768px) {
         padding: 2rem 1rem;
+        padding-bottom: 100px; // Ajusta para o player
     }
 
     @media (max-width: 480px) {
         padding: 1rem;
+        padding-bottom: 80px; // Ajusta para mobile
     }
 
     .thumbnailContainer { 
@@ -43,7 +47,6 @@
             &:last-child {
                 right: 0;
                 top: 50%;
-                background: var(--green-500);
                 transform: translate(50%, -50%);
             }
 
