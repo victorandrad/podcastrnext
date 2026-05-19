@@ -1,22 +1,43 @@
 .homepage {
-    padding: 0 4rem;
-    height: calc(100vh - 6.5rem);
-    overflow-y: scroll;
+    padding: 0 4rem 3rem;
+    height: calc(100vh - 6.5rem); // viewport - header
+    overflow-y: auto;
     max-width: 100%;
 
+    // Scrollbar discreta — mesma do .episode
+    scrollbar-width: thin; // Firefox
+    scrollbar-color: rgba(73, 77, 75, 0.25) transparent;
+
+    &::-webkit-scrollbar {
+        width: 6px;
+    }
+    &::-webkit-scrollbar-track {
+        background: transparent;
+    }
+    &::-webkit-scrollbar-thumb {
+        background: rgba(73, 77, 75, 0.2);
+        border-radius: 3px;
+
+        &:hover {
+            background: rgba(73, 77, 75, 0.4);
+        }
+    }
+
     @media (max-width: 768px) {
-        padding: 0 2rem;
+        padding: 0 2rem 10rem; // reserva espaço para o mini-player flutuante
+        height: auto;
+        overflow-y: visible;
     }
 
     @media (max-width: 480px) {
-        padding: 0 1rem;
+        padding: 0 1rem 10rem;
     }
 
     h2 {
         margin-top: 3rem;
         margin-bottom: 1.5rem;
     }
-} 
+}
 
 .latestEpisodes {
     margin-bottom: 3rem;
@@ -95,6 +116,7 @@
             @media (max-width: 480px) {
                 padding: 1rem;
                 flex-direction: column;
+                align-items: center;
                 text-align: center;
                 gap: 1rem;
             }
@@ -267,6 +289,17 @@
     padding-bottom: 2rem;
     overflow-x: auto;
 
+    @media (max-width: 768px) {
+        overflow-x: visible;
+
+        // Esconde Integrantes (3ª), Data (4ª), Duração (5ª)
+        // — mantém só thumbnail | título | play
+        th:nth-child(3), th:nth-child(4), th:nth-child(5),
+        td:nth-child(3), td:nth-child(4), td:nth-child(5) {
+            display: none;
+        }
+    }
+
     h2 {
         margin-bottom: 2rem;
         font-size: 2rem;
@@ -297,7 +330,6 @@
 
     table {
         width: 100%;
-        min-width: 600px; // Garante que a tabela não quebre em telas pequenas
         background: var(--white);
         border-radius: 1rem;
         overflow: hidden;

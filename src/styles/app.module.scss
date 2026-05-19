@@ -6,13 +6,21 @@
 
     @media (max-width: 768px) {
         flex-direction: column;
-        height: 100vh;
+        height: auto;
+        min-height: 100vh;
+        overflow: visible;
     }
 
     main {
         flex: 1;
         min-width: 0; // Previne que o conteúdo force o container a crescer
         height: 100%;
-        overflow: hidden; // Previne scroll duplo
+        overflow: hidden; // contêiner para inner-scroll do conteúdo
+
+        @media (max-width: 768px) {
+            width: 100%;
+            height: auto;
+            overflow: visible;
+        }
     }
 }

@@ -1,6 +1,6 @@
 .playerContainer {
     padding: 3rem 4rem;
-    width: 26.5rem;   
+    width: 26.5rem;
     height: 100vh;
 
     background: var(--purple-500);
@@ -16,11 +16,28 @@
         padding: 2rem;
     }
 
+    // Mini-player flutuante no mobile: fixo no rodapé com margem das bordas
     @media (max-width: 768px) {
-        width: 100%;
+        position: fixed;
+        left: 0.75rem;
+        right: 0.75rem;
+        bottom: 0.75rem;
+        width: auto;
         height: auto;
-        min-height: 100vh;
-        padding: 2rem 1rem;
+        min-height: 0;
+        padding: 0.875rem 1rem 1rem;
+        gap: 0.5rem;
+        border-radius: 1.25rem;
+        box-shadow: 0 8px 32px rgba(28, 16, 60, 0.35);
+        z-index: 20;
+        justify-content: flex-start;
+    }
+
+    @media (max-width: 480px) {
+        left: 0.5rem;
+        right: 0.5rem;
+        bottom: 0.5rem;
+        padding: 0.75rem 0.875rem 0.875rem;
     }
 
     header {
@@ -28,6 +45,11 @@
         align-items: center;
         justify-content: center;
         gap: 1rem;
+
+        // Sem espaço pro "Tocando agora" no mini flutuante
+        @media (max-width: 768px) {
+            display: none;
+        }
     }
 
     strong {
@@ -47,15 +69,26 @@
 
 .currentEpisode {
     text-align: center;
+    width: 100%;
 
     img {
         border-radius: 1.5rem;
+        width: 100%;
+        height: auto;
+        max-width: 18rem;
+        aspect-ratio: 1 / 1;
+        object-fit: cover;
     }
 
     strong {
         display: block;
         margin-top: 2rem;
-        font: 600 1,25rem Lexend, sans-serif;
+        font: 600 1.25rem Lexend, sans-serif;
+
+        @media (max-width: 480px) {
+            font-size: 1rem;
+            margin-top: 1rem;
+        }
     }
 
     span {
@@ -63,8 +96,47 @@
         margin-top: 1rem;
         opacity: 0.6;
         line-height: 1.5rem;
+
+        @media (max-width: 480px) {
+            margin-top: 0.5rem;
+            font-size: 0.875rem;
+        }
     }
-    
+
+    @media (max-width: 768px) {
+        // Layout horizontal compacto: thumb + título numa linha só
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        text-align: left;
+        gap: 0.75rem;
+        width: 100%;
+
+        img {
+            max-width: 3rem;
+            width: 3rem;
+            height: 3rem;
+            min-width: 3rem;
+            border-radius: 0.5rem;
+            margin: 0;
+            aspect-ratio: 1 / 1;
+        }
+
+        strong {
+            margin: 0;
+            font-size: 0.875rem;
+            line-height: 1.2;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            flex: 1;
+            min-width: 0;
+        }
+
+        // Membros ocultos — não cabem no mini
+        span { display: none; }
+    }
 }
 
 .emptyPlayer {
@@ -81,11 +153,17 @@
     align-items: center;
     justify-content: center;
 
+    // No mini-player, empty state vira só uma linha de texto
     @media (max-width: 768px) {
-        height: 15rem;
-        padding: 2rem;
+        height: auto;
+        min-height: 2.25rem;
+        padding: 0.25rem;
+        border: 0;
+        background: transparent;
+        border-radius: 0;
+
+        strong { font-size: 0.875rem; opacity: 0.85; }
     }
-    
 }
 
 .progress {
@@ -110,6 +188,18 @@
             border-radius: 2px;
         }
     }
+
+    @media (max-width: 768px) {
+        gap: 0.75rem;
+        font-size: 0.7rem;
+        padding: 0 0.25rem;
+
+        span {
+            width: auto;
+            min-width: 2.5rem;
+            font-size: 0.7rem;
+        }
+    }
 }
 
 .buttons {
@@ -120,8 +210,8 @@
     gap: 1.5rem;
 
     @media (max-width: 768px) {
-        gap: 1rem;
-        margin-top: 2rem;
+        gap: 0.5rem;
+        margin-top: 0.25rem;
     }
 
     button {
@@ -157,6 +247,17 @@
             &:hover:not(:disabled) {
                 filter: brightness(0.95);
            }
+
+            @media (max-width: 768px) {
+                width: 2.75rem;
+                height: 2.75rem;
+                border-radius: 0.75rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            img { width: 1rem; height: 1rem; }
+            &.playButton img { width: 1.125rem; height: 1.125rem; }
         }
     }
 }
